@@ -5,6 +5,7 @@ import numpy as np
 import logging
 from src.utils.common import read_yaml, create_directories
 import tensorflow as tf
+import io
 
 
 STAGE = "creating base model" ## <<< change stage name 
@@ -55,7 +56,15 @@ def main(config_path): #, params_path):
     metrics = ["accuracy"]      
     model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
 
-    model.summary()
+     ## log our model summary information
+    def _log_model_summary(model):
+        with io.StringIO() as stream:
+            model.summary(print_fn=lambda x: stream.write(f"{x}\n"))
+            summary_str = stream.getvalue()
+        return summary_str    
+
+    # model summary information
+    logging.info(f"{STAGE}: \n{_log_model_summary(model)}")
 
     #train the model
     history = model.fit(
@@ -66,8 +75,8 @@ def main(config_path): #, params_path):
 
     #save the model
     model_dir_path = os.path.join("artifacts", "models")
-    create_directories(model_dir_path)
-    model_file_path = os.path.join(model_dir_path, "model.h5")
+    create_directories([model_dir_path])
+    model_file_path = os.path.join(model_dir_path, "base_model.h5")
     model.save(model_file_path)
 
     logging.info(f"base model is saved to {model_file_path}")
