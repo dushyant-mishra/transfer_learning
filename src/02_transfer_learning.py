@@ -1,10 +1,10 @@
 import argparse
 import os
 import shutil
-from tqdm import tqdm
+#from tqdm import tqdm
 import logging
 from src.utils.common import read_yaml, create_directories
-import random
+import tensorflow as tf
 
 
 STAGE = "transfer learning" ## <<< change stage name 

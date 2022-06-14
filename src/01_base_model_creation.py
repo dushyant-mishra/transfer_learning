@@ -57,6 +57,21 @@ def main(config_path): #, params_path):
 
     model.summary()
 
+    #train the model
+    history = model.fit(
+        X_train, y_train,
+        epochs=10,
+        validation_data=(X_valid, y_valid),
+        verbose=2)
+
+    #save the model
+    model_dir_path = os.path.join("artifacts", "models")
+    create_directories(model_dir_path)
+    model_file_path = os.path.join(model_dir_path, "model.h5")
+    model.save(model_file_path)
+
+    logging.info(f"base model is saved to {model_file_path}")
+    logging.info(f"evaluation on test set: {model.evaluate(X_test, y_test, verbose=0)}")
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
