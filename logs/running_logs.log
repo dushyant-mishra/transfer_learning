@@ -1,86 +1,54 @@
-[2022-06-13 13:23:47,584: INFO: 01_base_model_creation]: 
+[2022-06-14 21:04:38,817: INFO: 02_transfer_learning_even_odd]: 
 ********************
-[2022-06-13 13:23:47,584: INFO: 01_base_model_creation]: >>>>> stage creating base model started <<<<<
-[2022-06-13 13:23:47,584: INFO: common]: yaml file: configs/config.yaml loaded successfully
-[2022-06-13 13:23:47,905: ERROR: 01_base_model_creation]: module 'keras.api._v2.keras' has no attribute 'LeakyReLU'
-Traceback (most recent call last):
-  File "src/01_base_model_creation.py", line 70, in <module>
-    main(config_path=parsed_args.config) #, params_path=parsed_args.params)
-  File "src/01_base_model_creation.py", line 44, in main
-    tf.keras.LeakyReLU(),
-AttributeError: module 'keras.api._v2.keras' has no attribute 'LeakyReLU'
-[2022-06-13 13:25:42,553: INFO: 01_base_model_creation]: 
-********************
-[2022-06-13 13:25:42,553: INFO: 01_base_model_creation]: >>>>> stage creating base model started <<<<<
-[2022-06-13 13:25:42,554: INFO: common]: yaml file: configs/config.yaml loaded successfully
-[2022-06-13 13:25:42,860: ERROR: 01_base_model_creation]: module 'keras.api._v2.keras' has no attribute 'LeakyReLU'
-Traceback (most recent call last):
-  File "src/01_base_model_creation.py", line 70, in <module>
-    main(config_path=parsed_args.config) #, params_path=parsed_args.params)
-  File "src/01_base_model_creation.py", line 44, in main
-    tf.keras.LeakyReLU(),
-AttributeError: module 'keras.api._v2.keras' has no attribute 'LeakyReLU'
-[2022-06-13 13:29:54,422: INFO: 01_base_model_creation]: 
-********************
-[2022-06-13 13:29:54,422: INFO: 01_base_model_creation]: >>>>> stage creating base model started <<<<<
-[2022-06-13 13:29:54,423: INFO: common]: yaml file: configs/config.yaml loaded successfully
-[2022-06-13 13:29:58,730: INFO: 01_base_model_creation]: >>>>> stage creating base model completed!<<<<<
+[2022-06-14 21:04:38,817: INFO: 02_transfer_learning_even_odd]: >>>>> stage transfer learning started <<<<<
+[2022-06-14 21:04:38,818: INFO: common]: yaml file: configs/config.yaml loaded successfully
+[2022-06-14 21:04:40,263: INFO: 02_transfer_learning_even_odd]: loaded base model summary: 
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ inputLayer (Flatten)        (None, 784)               0         
+                                                                 
+ hiddenLayer1 (Dense)        (None, 300)               235500    
+                                                                 
+ leaky_re_lu (LeakyReLU)     (None, 300)               0         
+                                                                 
+ hiddenLayer2 (Dense)        (None, 100)               30100     
+                                                                 
+ leaky_re_lu_1 (LeakyReLU)   (None, 100)               0         
+                                                                 
+ outputLayer (Dense)         (None, 10)                1010      
+                                                                 
+=================================================================
+Total params: 266,610
+Trainable params: 266,610
+Non-trainable params: 0
+_________________________________________________________________
 
-[2022-06-13 13:44:57,169: INFO: 01_base_model_creation]: 
-********************
-[2022-06-13 13:44:57,169: INFO: 01_base_model_creation]: >>>>> stage creating base model started <<<<<
-[2022-06-13 13:44:57,170: INFO: common]: yaml file: configs/config.yaml loaded successfully
-[2022-06-13 13:45:37,379: INFO: common]: created directory at: a
-[2022-06-13 13:45:37,379: INFO: common]: created directory at: r
-[2022-06-13 13:45:37,380: INFO: common]: created directory at: t
-[2022-06-13 13:45:37,380: INFO: common]: created directory at: i
-[2022-06-13 13:45:37,381: INFO: common]: created directory at: f
-[2022-06-13 13:45:37,381: INFO: common]: created directory at: a
-[2022-06-13 13:45:37,381: INFO: common]: created directory at: c
-[2022-06-13 13:45:37,382: INFO: common]: created directory at: t
-[2022-06-13 13:45:37,382: INFO: common]: created directory at: s
-[2022-06-13 13:45:37,382: INFO: common]: created directory at: \
-[2022-06-13 13:45:37,382: INFO: common]: created directory at: m
-[2022-06-13 13:45:37,383: INFO: common]: created directory at: o
-[2022-06-13 13:45:37,383: INFO: common]: created directory at: d
-[2022-06-13 13:45:37,383: INFO: common]: created directory at: e
-[2022-06-13 13:45:37,384: INFO: common]: created directory at: l
-[2022-06-13 13:45:37,384: INFO: common]: created directory at: s
-[2022-06-13 13:45:37,405: INFO: 01_base_model_creation]: base model is saved to artifacts\models\model.h5
-[2022-06-13 13:45:37,445: INFO: 01_base_model_creation]: >>>>> stage creating base model completed!<<<<<
+[2022-06-14 21:04:40,298: INFO: 02_transfer_learning_even_odd]: transfer learning model summary: 
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ inputLayer (Flatten)        (None, 784)               0         
+                                                                 
+ hiddenLayer1 (Dense)        (None, 300)               235500    
+                                                                 
+ leaky_re_lu (LeakyReLU)     (None, 300)               0         
+                                                                 
+ hiddenLayer2 (Dense)        (None, 100)               30100     
+                                                                 
+ leaky_re_lu_1 (LeakyReLU)   (None, 100)               0         
+                                                                 
+ output_layer (Dense)        (None, 2)                 202       
+                                                                 
+=================================================================
+Total params: 265,802
+Trainable params: 202
+Non-trainable params: 265,600
+_________________________________________________________________
 
-[2022-06-13 14:41:11,945: INFO: 01_base_model_creation]: 
-********************
-[2022-06-13 14:41:11,945: INFO: 01_base_model_creation]: >>>>> stage creating base model started <<<<<
-[2022-06-13 14:41:11,946: INFO: common]: yaml file: configs/config.yaml loaded successfully
-[2022-06-13 14:41:52,114: INFO: common]: created directory at: a
-[2022-06-13 14:41:52,115: INFO: common]: created directory at: r
-[2022-06-13 14:41:52,115: INFO: common]: created directory at: t
-[2022-06-13 14:41:52,116: INFO: common]: created directory at: i
-[2022-06-13 14:41:52,116: INFO: common]: created directory at: f
-[2022-06-13 14:41:52,116: INFO: common]: created directory at: a
-[2022-06-13 14:41:52,116: INFO: common]: created directory at: c
-[2022-06-13 14:41:52,117: INFO: common]: created directory at: t
-[2022-06-13 14:41:52,117: INFO: common]: created directory at: s
-[2022-06-13 14:41:52,117: INFO: common]: created directory at: \
-[2022-06-13 14:41:52,117: INFO: common]: created directory at: m
-[2022-06-13 14:41:52,118: INFO: common]: created directory at: o
-[2022-06-13 14:41:52,118: INFO: common]: created directory at: d
-[2022-06-13 14:41:52,119: INFO: common]: created directory at: e
-[2022-06-13 14:41:52,119: INFO: common]: created directory at: l
-[2022-06-13 14:41:52,119: INFO: common]: created directory at: s
-[2022-06-13 14:41:52,132: INFO: 01_base_model_creation]: base model is saved to artifacts\models\model.h5
-[2022-06-13 14:41:52,822: INFO: 01_base_model_creation]: evaluation on test set: [0.316264271736145, 0.9092000126838684]
-[2022-06-13 14:41:52,862: INFO: 01_base_model_creation]: >>>>> stage creating base model completed!<<<<<
+[2022-06-14 21:05:28,900: INFO: 02_transfer_learning_even_odd]: base model is saved to artifacts\models\even_odd_model.h5
+[2022-06-14 21:05:29,985: INFO: 02_transfer_learning_even_odd]: evaluation on test set: [0.2912617623806, 0.8795999884605408]
+[2022-06-14 21:05:30,008: INFO: 02_transfer_learning_even_odd]: >>>>> stage transfer learning completed!<<<<<
 
-[2022-06-13 14:47:51,964: INFO: 01_base_model_creation]: 
-********************
-[2022-06-13 14:47:51,964: INFO: 01_base_model_creation]: >>>>> stage creating base model started <<<<<
-[2022-06-13 14:47:51,966: INFO: common]: yaml file: configs/config.yaml loaded successfully
-[2022-06-13 14:48:30,411: ERROR: 01_base_model_creation]: name 'create_directories' is not defined
-Traceback (most recent call last):
-  File "src/01_base_model_creation.py", line 85, in <module>
-    main(config_path=parsed_args.config) #, params_path=parsed_args.params)
-  File "src/01_base_model_creation.py", line 69, in main
-    create_directories(model_dir_path)
-NameError: name 'create_directories' is not defined
