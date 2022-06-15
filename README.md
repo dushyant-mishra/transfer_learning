@@ -1,29 +1,9 @@
-# generic-python-project-template
-generic-python-project-template
+This exercise is a demonstration of transfer learning using TF and keras.
 
-## STEPS -
+A base model is created to classify the MNIST dataset (01_base_model_creation.py). This model is saved as base_model.h5 file. 
 
-### STEP 01- Create a repository by using template repository
+Another "binary" base model is created to classify the MNIST dataset as odd or even numbers (01.01_base_model_creation.py). This model is saved as bin_base_model.h5.
 
-### STEP 02- Clone the new repository
+Using the weights of the base model a "transfer learning" model is created (02_transfer_learning_even_odd.py) modifying the final output layer to classify the digits in the MNIST dataset as odd or even. It is saved as even_odd_model.h5. 
 
-### STEP 03- Create a conda environment after opening the repository in VSCODE
-
-```bash
-conda create --prefix ./env python=3.7 -y
-```
-
-```bash
-conda activate ./env
-```
-OR
-```bash
-source activate ./env
-```
-
-### STEP 04- install the requirements
-```bash
-pip install -r requirements.txt
-```
-
-### STEP 06- commit and push the changes to the remote repository
+The base model's weights are used for also classifying digits as greater than 5 or not (03_transfer_learning_greater_than_5.py) and saved as greater_than_5_model.h5. 
