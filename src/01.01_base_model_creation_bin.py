@@ -1,7 +1,7 @@
 import argparse
 import os
 import numpy as np
-#import tqdm
+#from tqdm import tqdm
 import logging
 from src.utils.common import read_yaml, create_directories
 import tensorflow as tf
@@ -10,7 +10,7 @@ import tensorflow_addons as tfa
 from time import time
 
 
-STAGE = "creating base model" ## <<< change stage name 
+STAGE = "creating binary base model" ## <<< change stage name 
 
 logging.basicConfig(
     filename=os.path.join("logs", 'running_logs.log'), 
@@ -19,6 +19,14 @@ logging.basicConfig(
     filemode="a"
     )
 
+def update_even_odd_labels(list_of_labels):
+    """
+    Update the labels to be even or odd.
+    """
+    for idx, label in enumerate(list_of_labels):
+        even_condition = label % 2 == 0
+        list_of_labels[idx] = np.where(even_condition, 1, 0)
+    return list_of_labels
 
 def main(config_path): #, params_path):
     ## read config files
@@ -36,6 +44,8 @@ def main(config_path): #, params_path):
     # scale the test set as well
     X_test = X_test / 255.
 
+    y_train_binary, y_test_binary, y_valid_binary = update_even_odd_labels([y_train, y_test, y_valid])
+
     #set the seeds
     seed = 2021 ##get it from config file
     tf.random.set_seed(seed)
@@ -47,7 +57,7 @@ def main(config_path): #, params_path):
               tf.keras.layers.LeakyReLU(),
               tf.keras.layers.Dense(100, name="hiddenLayer2"),
               tf.keras.layers.LeakyReLU(),
-              tf.keras.layers.Dense(10, activation="softmax", name="outputLayer")
+              tf.keras.layers.Dense(2, activation="softmax", name="outputLayer")
               ]
 
     #define model and compile
@@ -72,22 +82,24 @@ def main(config_path): #, params_path):
     start = time()
     tqdm_callback = tfa.callbacks.TQDMProgressBar()
     history = model.fit(
-        X_train, y_train,
+        X_train, y_train_binary,
         epochs=10,
-        validation_data=(X_valid, y_valid),
+        validation_data=(X_valid, y_valid_binary),
         callbacks=[tqdm_callback],
         verbose=0)
-    total_time = round(time() - start, 3)  
+    total_time = round(time() - start, 3) 
+   
 
     #save the model
     model_dir_path = os.path.join("artifacts", "models")
     create_directories([model_dir_path])
-    model_file_path = os.path.join(model_dir_path, "base_model.h5")
+    model_file_path = os.path.join(model_dir_path, "bin_base_model.h5")
     model.save(model_file_path)
 
-    logging.info(f"base model is saved to {model_file_path}")
-    logging.info(f"evaluation on test set: {model.evaluate(X_test, y_test, callbacks=[tqdm_callback], verbose=0)}")
+    logging.info(f"bin_base model is saved to {model_file_path}")
+    logging.info(f"evaluation on test set: {model.evaluate(X_test, y_test_binary, verbose=0)}")
     logging.info(f"time taken to train the model: {total_time} seconds")
+
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser()

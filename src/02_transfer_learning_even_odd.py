@@ -6,6 +6,8 @@ import logging
 from src.utils.common import read_yaml, create_directories
 import tensorflow as tf
 import io
+import tensorflow_addons as tfa
+from time import time
 
 
 STAGE = "transfer learning" ## <<< change stage name 
@@ -91,13 +93,17 @@ def main(config_path): #, params_path):
     metrics = ["accuracy"]      
     new_model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
 
-    
-    #train the model
+    #train the model using tqdm training progress bar
+    start = time()
+    tqdm_callback = tfa.callbacks.TQDMProgressBar()
     history = new_model.fit(
-        X_train, y_train_binary,   # << y_train_binary is the updated y_train
+        X_train, y_train_binary,
         epochs=10,
-        validation_data=(X_valid, y_valid_binary),  # << y_valid_binary is the updated y_valid
-        verbose=2)
+        validation_data=(X_valid, y_valid_binary),
+        callbacks=[tqdm_callback],
+        verbose=0)
+    total_time = round(time() - start, 3) 
+  
 
     #save the model
     model_dir_path = os.path.join("artifacts", "models")
@@ -107,6 +113,8 @@ def main(config_path): #, params_path):
 
     logging.info(f"base model is saved to {model_file_path}")
     logging.info(f"evaluation on test set: {new_model.evaluate(X_test, y_test_binary, verbose=0)}")  # << y_test_binary is the updated y_test
+    logging.info(f"time taken to train the model: {total_time} seconds")
+
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser()

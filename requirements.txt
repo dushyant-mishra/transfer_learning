@@ -4,5 +4,6 @@ pandas
 numpy
 PyYAML
 tensorflow
+tensorflow-addons
 ### local packages -
  -e . # << uncomment this to install from setup.py

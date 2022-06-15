@@ -1,7 +1,7 @@
 import argparse
 import os
 import numpy as np
-#import tqdm
+#from tqdm import tqdm
 import logging
 from src.utils.common import read_yaml, create_directories
 import tensorflow as tf
@@ -9,8 +9,7 @@ import io
 import tensorflow_addons as tfa
 from time import time
 
-
-STAGE = "creating base model" ## <<< change stage name 
+STAGE = "transfer learning" ## <<< change stage name 
 
 logging.basicConfig(
     filename=os.path.join("logs", 'running_logs.log'), 
@@ -19,6 +18,22 @@ logging.basicConfig(
     filemode="a"
     )
 
+def update_greater_than_less_than_5(list_of_labels):
+    """
+    Update the labels to be greater than 5 or not.
+    """
+    for idx, label in enumerate(list_of_labels):
+        greater_than_5_condition = label > 5
+        list_of_labels[idx] = np.where(greater_than_5_condition, 1, 0)
+    return list_of_labels
+
+    # new_list = []
+    # for label in list_of_labels:
+    #     if label % 2 == 0:
+    #         new_list.append(0)
+    #     else:
+    #         new_list.append(1)
+    # return new_list
 
 def main(config_path): #, params_path):
     ## read config files
@@ -36,58 +51,68 @@ def main(config_path): #, params_path):
     # scale the test set as well
     X_test = X_test / 255.
 
+    y_train_binary, y_test_binary, y_valid_binary = update_greater_than_less_than_5([y_train, y_test, y_valid])
+
     #set the seeds
     seed = 2021 ##get it from config file
     tf.random.set_seed(seed)
     np.random.seed(seed)
 
-    #define layers
-    layers = [tf.keras.layers.Flatten(input_shape=[28,28], name="inputLayer"),
-              tf.keras.layers.Dense(300, name="hiddenLayer1"),
-              tf.keras.layers.LeakyReLU(),
-              tf.keras.layers.Dense(100, name="hiddenLayer2"),
-              tf.keras.layers.LeakyReLU(),
-              tf.keras.layers.Dense(10, activation="softmax", name="outputLayer")
-              ]
-
-    #define model and compile
-    model = tf.keras.models.Sequential(layers)
-
-    loss = "sparse_categorical_crossentropy"
-    optimizer = tf.keras.optimizers.SGD(learning_rate=1e-3)
-    metrics = ["accuracy"]      
-    model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
-
-     ## log our model summary information
+    ## log our model summary information
     def _log_model_summary(model):
         with io.StringIO() as stream:
             model.summary(print_fn=lambda x: stream.write(f"{x}\n"))
             summary_str = stream.getvalue()
-        return summary_str    
+        return summary_str
 
+    #loading the base model
+    base_model_path = os.path.join("artifacts", "models", "base_model.h5")
+    base_model = tf.keras.models.load_model(base_model_path)
     # model summary information
-    logging.info(f"{STAGE}: \n{_log_model_summary(model)}")
+    logging.info(f"loaded base model summary: \n{_log_model_summary(base_model)}")
 
-    #train the model using tqdm training progress bar
+
+    #freeze the weights of base model
+    for layer in base_model.layers[:-1]:
+        print(f"trainable status before: {layer.name} - {layer.trainable}")
+        layer.trainable = False
+        print(f"trainable status after: {layer.name} - {layer.trainable}")  
+
+    base_layer = base_model.layers[:-1]
+
+    #define model and compile
+    new_model = tf.keras.models.Sequential(base_layer)
+    new_model.add( tf.keras.layers.Dense(2, activation="softmax", name = "output_layer")
+    )
+
+    logging.info(f"{STAGE} model summary: \n{_log_model_summary(new_model)}")
+    
+    loss = "sparse_categorical_crossentropy"
+    optimizer = tf.keras.optimizers.SGD(learning_rate=1e-3)
+    metrics = ["accuracy"]      
+    new_model.compile(loss=loss, optimizer=optimizer, metrics=metrics)
+
+     #train the model using tqdm training progress bar
     start = time()
     tqdm_callback = tfa.callbacks.TQDMProgressBar()
-    history = model.fit(
-        X_train, y_train,
+    history = new_model.fit(
+        X_train, y_train_binary,
         epochs=10,
-        validation_data=(X_valid, y_valid),
+        validation_data=(X_valid, y_valid_binary),
         callbacks=[tqdm_callback],
         verbose=0)
     total_time = round(time() - start, 3)  
-
+  
     #save the model
     model_dir_path = os.path.join("artifacts", "models")
-    create_directories([model_dir_path])
-    model_file_path = os.path.join(model_dir_path, "base_model.h5")
-    model.save(model_file_path)
+    #create_directories([model_dir_path])
+    model_file_path = os.path.join(model_dir_path, "greater_than_5_model.h5")
+    new_model.save(model_file_path)
 
     logging.info(f"base model is saved to {model_file_path}")
-    logging.info(f"evaluation on test set: {model.evaluate(X_test, y_test, callbacks=[tqdm_callback], verbose=0)}")
+    logging.info(f"evaluation on test set: {new_model.evaluate(X_test, y_test_binary, verbose=0)}")  # << y_test_binary is the updated y_test
     logging.info(f"time taken to train the model: {total_time} seconds")
+
 
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
